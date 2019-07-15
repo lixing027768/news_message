@@ -2,4 +2,4 @@
 *.py[code]
 logs/log*
 migrations
-\w+\.sql
+*.sql
