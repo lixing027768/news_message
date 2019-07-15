@@ -3,3 +3,4 @@
 logs/log*
 migrations
 *.sql
+static
