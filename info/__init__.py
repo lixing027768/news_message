@@ -46,5 +46,8 @@ def create_app(config_name):
     CSRFProtect(app)
     # 数据保存到redis
     Session(app)
+    # 蓝图注册
+    from info.moudles.index import index_blu
+    app.register_blueprint(index_blu)
 
     return app
