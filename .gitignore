@@ -1,3 +1,5 @@
 .idea
 *.py[code]
 logs/log*
+migrations
+\w+\.sql
