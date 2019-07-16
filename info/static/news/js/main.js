@@ -51,6 +51,7 @@ $(function(){
 	// 打开注册框
 	$('.register_btn').click(function(){
 		$('.register_form_con').show();
+		// 打开注册框自动显示图片验证码
 		generateImageCode()
 	})
 
@@ -59,6 +60,7 @@ $(function(){
 	$('.to_register').click(function(){
 		$('.login_form_con').hide();
 		$('.register_form_con').show();
+        // 实现切换登录和注册框都会显示图片验证码
         generateImageCode()
 	})
 
@@ -150,9 +152,14 @@ $(function(){
 
 var imageCodeId = ""
 
-// TODO 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
+// 生成一个图片验证码的编号，并设置页面中图片验证码img标签的src属性
 function generateImageCode() {
-
+    // 生成一个uuid编号, 严格保证编号唯一
+    imageCodeId = generateUUID()
+    // 拼接图片验证码地址
+    var imageCodeUrl = "passport/image_code?code_id=" + imageCodeId;
+    // 设置页面中图片验证码img标签的src属性
+    $(".get_pic_code").attr("src", imageCodeUrl)
 }
 
 // 发送短信验证码
@@ -175,6 +182,7 @@ function sendSMSCode() {
     }
 
     // TODO 发送短信验证码
+
 }
 
 // 调用该函数模拟点击左侧按钮

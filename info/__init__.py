@@ -49,5 +49,8 @@ def create_app(config_name):
     # 蓝图注册
     from info.moudles.index import index_blu
     app.register_blueprint(index_blu)
+    # 登录注册模块
+    from  info.moudles.passport import passport_blu
+    app.register_blueprint(passport_blu)
 
     return app
