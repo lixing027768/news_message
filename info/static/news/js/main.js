@@ -182,7 +182,55 @@ function sendSMSCode() {
     }
 
     // TODO 发送短信验证码
-
+    // 定义变量接收后端参数mobile/image_code/image_code_id
+    var params = {
+        "mobile": mobile,
+        "image_code": imageCode,
+        "image_code_id": imageCodeId,
+    }
+    // 局部刷新
+    $.ajax({
+        // 前台显示的url地址
+        url: "/passport/smscode",
+        // 请求方式
+        method: "POST",
+        // 请求内容
+        data: JSON.stringify(params),
+        // 请求内容数据类型
+        contentType: "application/json",
+        // 响应数据格式
+        dataType: "json",
+        // 执行函数
+        success: function (resp) {
+            if (resp.errno == "0"){
+                // 定计时器
+                var num = 60;
+                var t = setInterval(function () {
+                    if (num == 1) {
+                        // num=1 清除定时器
+                        clearInterval(t);
+                        // 读秒结束 重新显示获取短信验证码
+                        $(".get_code").html("获取验证码");
+                        // 重置点击按钮事件
+                        $(".get_code").attr("onclick", "sendSMSCode();");
+                    }else {
+                        num -= 1;
+                        $(".get_code").html(num + "秒");
+                    }
+                }, 1000)
+            }else {
+                // resp.errno != 0 表示后端发送短信失败
+                $("#register-sms-code-err").html(resp.errmsg);
+                $("#register-sms-code-err").show();
+                // 重置点击按钮事件
+                $(".get_code").attr("onclick", "sendSMSCode();")
+                if (resp.errno == "4004") {
+                    // 4004表示图片验证码获取错误,重新生成新的图片验证码
+                    generateImageCode()
+                }
+            }
+        }
+    })
 }
 
 // 调用该函数模拟点击左侧按钮
