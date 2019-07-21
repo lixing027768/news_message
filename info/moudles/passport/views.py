@@ -1,5 +1,7 @@
 import random
 import re
+from datetime import datetime
+
 from flask import make_response, jsonify
 from flask import request
 from flask import current_app
@@ -14,12 +16,58 @@ from info import constants
 from info.utils.response_code import RET
 
 
+@passport_blu.route("/loginout", mehtods=["POST"])
+def loginout():
+    """清除用户登录状态"""
+    session.pop("user_id", None)
+    session.pop("nick_name", None)
+    session.pop("mobile", None)
+
+    return jsonify(errno=RET.OK, errmsg="OK")
+
+
+@passport_blu.route("/login")
+def login():
+    """
+    登录功能后端实现: mobile password
+    :return:
+    """
+    params_data = request.json
+    mobile = params_data.get("mobile")
+    password = params_data.get("password")
+
+    if not all([mobile, password]):
+        return jsonify(errno=RET.PARAMERR, errmsg="参数不足")
+    try:
+        user = User.query.filter_by(mobile=mobile).first()
+    except Exception as e:
+        current_app.logger.error(e)
+        return jsonify(errno=RET.DATAERR, errmsg="查询数据失败")
+    # 校验用户是否存在
+    if not user:
+        return jsonify(errno=RET.USERERR, errmsg="用户不存在")
+    # 校验密码
+    if not user.check_password(password):
+        return jsonify(errno=RET.PWDERR, errmsg="密码错误")
+
+    # 用户登录状态保存
+    session["user_id"] = user.id
+    session["nick_name"] = user.nick_name
+    session["mobile"] = user.mobile
+    user.last_login = datetime.now()
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(e)
+    return jsonify(errno=RET.OK, errmsg="OK")
+
+
 @passport_blu.route("/register", methods=["POST"])
 def register():
     """
     获取参数并判断是否有值: mobile/sms_code/password
     获取redis中SMS_code,删除redis的sms_code,并和请求sms_code比较，是否一致,
-    通过手机号查user库手机号是否已经被注册
     没被注册则保存到数据库,信息注册
     :return:
     """

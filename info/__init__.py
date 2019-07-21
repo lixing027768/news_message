@@ -43,9 +43,16 @@ def create_app(config_name):
     global redis_store
     redis_store = redis.StrictRedis(host=config[config_name].REDIS_HOST, port=config[config_name].REDIS_PORT)
     # csrf_token验证
-    # CSRFProtect(app)
+    CSRFProtect(app)
     # 数据保存到redis
     Session(app)
+    from flask_wtf.csrf import generate_csrf
+    @app.after_request
+    def after_request(response):
+        csrf_token = generate_csrf()
+        response.set_cookie("csrf_token", csrf_token)
+        return response
+
     # 蓝图注册
     from info.moudles.index import index_blu
     app.register_blueprint(index_blu)
