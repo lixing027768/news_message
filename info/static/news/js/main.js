@@ -146,6 +146,26 @@ $(function(){
         }
 
         // 发起注册请求
+        var params = {
+            "mobile": mobile,
+            "smscode": smscode,
+            "password": password,
+        }
+
+        $.ajax({
+            url: "/passport/register",
+            method: "POST",
+            data: JSON.stringify(params),
+            contentType: "application/json",
+            success: function (resp) {
+                if (resp.errno == "0"){
+                    location.reload()
+                }else {
+                    $("#register-password-err").html(resp.errmsg)
+                    $("#register-password-err").show()
+                }
+            }
+        })
 
     })
 })
@@ -181,7 +201,7 @@ function sendSMSCode() {
         return;
     }
 
-    // TODO 发送短信验证码
+    // 发送短信验证码
     // 定义变量接收后端参数mobile/image_code/image_code_id
     var params = {
         "mobile": mobile,
@@ -200,6 +220,9 @@ function sendSMSCode() {
         contentType: "application/json",
         // 响应数据格式
         dataType: "json",
+        headers:{
+                "X-CSRFToken": getCookie("csrf_token")
+            },
         // 执行函数
         success: function (resp) {
             if (resp.errno == "0"){
