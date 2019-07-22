@@ -14,6 +14,7 @@ def index():
         user = User.query.get(user_id)
     except Exception as e:
         current_app.logger.error(e)
+
     return render_template("news/index.html", data={"user_info": user.to_dict() if user else None})
 
 

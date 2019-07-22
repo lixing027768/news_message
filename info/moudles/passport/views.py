@@ -16,7 +16,7 @@ from info import constants
 from info.utils.response_code import RET
 
 
-@passport_blu.route("/loginout", mehtods=["POST"])
+@passport_blu.route("/loginout", methods=["POST"])
 def loginout():
     """清除用户登录状态"""
     session.pop("user_id", None)
@@ -26,10 +26,11 @@ def loginout():
     return jsonify(errno=RET.OK, errmsg="OK")
 
 
-@passport_blu.route("/login")
+@passport_blu.route("/login", methods=["POST"])
 def login():
     """
     登录功能后端实现: mobile password
+    登录测试用户：15200359133 password: lx123456789
     :return:
     """
     params_data = request.json
@@ -69,6 +70,7 @@ def register():
     获取参数并判断是否有值: mobile/sms_code/password
     获取redis中SMS_code,删除redis的sms_code,并和请求sms_code比较，是否一致,
     没被注册则保存到数据库,信息注册
+    注册测试用户：15200359133 password: lx123456789
     :return:
     """
     params_data = request.json

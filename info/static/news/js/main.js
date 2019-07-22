@@ -315,3 +315,20 @@ function generateUUID() {
     });
     return uuid;
 }
+
+// 用户登出功能实现
+function loginout() {
+    $.ajax({
+        url: "/passport/loginout",
+        method: "POST",
+        contentType: "application/json",
+        headers:{
+                "X-CSRFToken": getCookie("csrf_token")
+            },
+        success: function (resp) {
+            location.reload()
+        }
+
+    })
+
+}
