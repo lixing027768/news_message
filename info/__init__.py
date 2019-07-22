@@ -46,7 +46,9 @@ def create_app(config_name):
     CSRFProtect(app)
     # 数据保存到redis
     Session(app)
+
     from flask_wtf.csrf import generate_csrf
+
     @app.after_request
     def after_request(response):
         csrf_token = generate_csrf()
@@ -59,5 +61,9 @@ def create_app(config_name):
     # 登录注册模块
     from  info.moudles.passport import passport_blu
     app.register_blueprint(passport_blu)
+
+    # 自定义过滤器:点击排行榜
+    from info.utils.common import do_index_class
+    app.add_template_filter(do_index_class, "index_class")
 
     return app
